@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head><title>Login</title></head>
+<body>
+  <h1>Login</h1>
+
+  <div>
+    <input id="loginInput" placeholder="Username" />
+    <input id="pwdInput" placeholder="Password" type="password" />
+    <button id="loginBtn">Log In</button>
+  </div>
+
+  <div>
+    <button id="forgotBtn">Forgot Password</button>
+  </div>
+
+  <div id="loggedInPanel" style="display:none;">
+    <p>Welcome! You are logged in.</p>
+    <button id="logoutBtn">Log Out</button>
+  </div>
+
+  <p>Failed attempts: <span id="counter">0</span></p>
+  <p>Status: <span id="status">-</span></p>
+  <p id="message"></p>
+
+  <script src="login.js"></script>
+</body>
+</html>

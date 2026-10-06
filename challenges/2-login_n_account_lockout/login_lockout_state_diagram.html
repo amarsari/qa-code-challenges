@@ -1,0 +1,31 @@
+<div id="state"></div>
+<script type="module">
+import mermaid from 'https://esm.sh/mermaid@11/dist/mermaid.esm.min.mjs';
+const themeMode = document.documentElement.dataset.mode;
+const dark = themeMode ? themeMode === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+await document.fonts.ready;
+mermaid.initialize({
+  startOnLoad: false,
+  theme: 'base',
+  fontFamily: '"anthropic-sans", sans-serif',
+  themeVariables: {
+    darkMode: dark,
+    fontSize: '13px',
+    fontFamily: '"anthropic-sans", sans-serif',
+    lineColor: dark ? '#9c9a92' : '#73726c',
+    textColor: dark ? '#c2c0b6' : '#3d3d3a',
+  },
+});
+const src = `stateDiagram-v2
+    [*] --> LoginScreen
+    LoginScreen --> LoginScreen: Invalid credentials / counter+1
+    LoginScreen --> LoggedIn: Valid credentials
+    LoginScreen --> LockedOut: Counter reaches 3
+    LoginScreen --> LoginScreen: Forgot password (no-op, already 0)
+    LoggedIn --> LoginScreen: Logout / counter stays 0
+    LockedOut --> LockedOut: Any password entered / still rejected
+    LockedOut --> LoginScreen: 5 min timer expires / counter resets
+    LockedOut --> LoginScreen: Forgot password / immediate unlock`;
+const { svg } = await mermaid.render('state-svg', src);
+document.getElementById('state').innerHTML = svg;
+</script>

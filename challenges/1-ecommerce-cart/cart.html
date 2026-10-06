@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head><title>Cart</title></head>
+<body>
+  <h1>Shopping Cart</h1>
+
+  <div>
+    <input id="productId" placeholder="Product ID" />
+    <input id="quantity" placeholder="Quantity" type="number" />
+    <input id="price" placeholder="Price" type="number" />
+    <button id="addBtn">Add Item</button>
+  </div>
+
+  <div>
+    <input id="removeId" placeholder="Product ID to remove" />
+    <button id="removeBtn">Remove Item</button>
+  </div>
+
+  <div>
+    <input id="discountCode" placeholder="Discount code" />
+    <button id="applyDiscountBtn">Apply Discount</button>
+  </div>
+
+  <button id="checkoutBtn">Checkout</button>
+
+  <ul id="itemList"></ul>
+  <p>Subtotal: $<span id="subtotal">0</span></p>
+  <p>Total: $<span id="total">0</span></p>
+  <p id="message"></p>
+
+  <script src="cart.js"></script>
+</body>
+</html>
