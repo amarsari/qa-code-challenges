@@ -6,7 +6,7 @@ A curated collection of practical Quality Assurance technical challenges, coveri
 
 | # | Challenge | Focus Areas | SUT Tech | Challenge Spec | Solution & QA Docs |
 |---|---|---|---|---|---|
-| 01 | **E-Commerce Shopping Cart** | Boundary Value Analysis, Decision Tables, IEEE 829 Specs, State Modeling | Vanilla JS / Cypress | [View Prompt](./challenges/01-ecommerce-cart/README.md) | [View Solution](./challenges/01-ecommerce-cart/SOLUTION.md) |
+| 01 | **E-Commerce Shopping Cart** | Boundary Value Analysis, Decision Tables, IEEE 829 Specs, State Modeling | Vanilla JS / Cypress | [View Prompt](./challenges/1-ecommerce-cart/README.md) | [View Solution](./challenges/1-ecommerce-cart/SOLUTION.md) |
 
 ---
 
