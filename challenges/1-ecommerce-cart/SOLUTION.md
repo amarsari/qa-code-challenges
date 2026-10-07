@@ -37,18 +37,3 @@ stateDiagram-v2
 
     %% Terminal State
     S3 --> [*]
-
-
-Conditions / Scenarios,R01,R02,R03,R04,R05,R06,R07
-Operation Type,Add,Add,Add,Add,Add,Remove,Remove
-Product ID Present?,T,T,T,T,F,*,*
-Quantity Input,1–10,≤ 0 / non-int,> 10,1–10,1–10,*,*
-Price Input (> 0),T,T,T,F,T,*,*
-Product Exists in Cart?,*,*,*,*,*,T,F
-ACTIONS,,,,,,,
-Add Item & recalculate subtotal,X,—,—,—,—,—,—
-Remove Item & recalculate subtotal,—,—,—,—,—,X,—
-"Error: ""Invalid quantity""",—,X,—,—,—,—,—
-"Error: ""Quantity exceeds limit""",—,—,X,—,—,—,—
-"Error: ""Invalid price / missing product""",—,—,—,X,X,—,—
-"Error: ""Item not found""",—,—,—,—,—,—,X
