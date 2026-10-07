@@ -27,7 +27,7 @@ The application consists of a shopping cart (`cart.html` and `cart.js`) supporti
    - Removing an invalid `productId` must display an error without crashing.
 3. **Discounts**:
    - `SAVE10`: 10% off subtotal.
-   - `SAVE20`: 20% off subtotal, **only valid if subtotal is $\ge \$50$**.
+   - `SAVE20`: 20% off subtotal, **only valid if subtotal is **>=50$**.
    - Coupon codes are case-insensitive.
    - Only one coupon can be active at a time (coupons do not stack; applying a new valid coupon replaces the current one).
 4. **Calculations**:
