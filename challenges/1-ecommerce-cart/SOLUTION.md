@@ -50,7 +50,7 @@ Notation: T = True; F = False, * = Irrelevant; X = Action Executed; - = No Actio
 | :--------------------------------------- | :---- | :----------------- | :---- | :---- | :---- | :----- | :----- |
 | Operation Type                           | Add   | Add                | Add   | Add   | Add   | Remove | Remove |
 | Product ID Present?                      | T     | T                  | T     | T     | F     | *      | *      |
-| Qantity Input                            | 1-10  | <= 0 / non-integer | >10   | 1-10  | 1-10  | *      | *      |
+| Quantity Input                            | 1-10  | <= 0 / non-integer | >10   | 1-10  | 1-10  | *      | *      |
 | Price Input (>0)                         | T     | T                  | T     | F     | T     | *      | *      |
 | Product Exists in Cart?                  | *     | *                  | *     | *     | *     | T      | F      |
 | **<u>Actions</u>**                       |       |                    |       |       |       |        |        |
