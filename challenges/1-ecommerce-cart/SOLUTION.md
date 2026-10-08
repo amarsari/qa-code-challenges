@@ -106,6 +106,68 @@ Notation: T = True; F = False, * = Irrelevant; X = Action Executed; - = No Actio
 | TC12  | R12      | Attempt to apply SAVE20 when subtotal is below the $50 threshold                                                   | Precondition: Cart contains items with a known subtotal (productId: 1, qty: 1, price: 49.99 -> subtotal: 49.99; no previous discount applied.   <br> Action input: applyDiscount("SAVE20")                                                                                                                                                                                            | Error ‘Invalid discount for subtotal amount'; subtotal remains $49.99; discount remains $0.00; total remains $49.99; active code remains null/empty.                                |
 | TC13  | R13      | Apply invalid uppercase discount code WHATEVER with subtotal equals to 50                                          | Precondition: Cart contains items with a known subtotal (productId: 1, qty: 1, price: 50 -> subtotal: 50; no previous discount applied.         <br> Action input: applyDiscount("WHATEVER")                                                                                                                                                                                       | Error 'Invalid code'; subtotal remains $50.00; discount remains $0.00; total remains $50.00; active code remains null/empty.                                                        |
 | TC14  | R14      | Verify cart total cannot be negative and floors at $0.00 when discount exceeds subtotal                            | Precondition: Cart has a subtotal less than the applied discount amount (e.g., mock cart state where subtotal = $10.00 and discount = $15.00, or discount applied then items removed reducing subtotal below discount) <br> Action input: Call cart.getTotal()   | Cart total evaluates to $0.00 (floored at 0, not -$5.00)
-| TC15  | R15      | Verify checkout succeeds when cart is active                                                                       | Precondition: Cart has a productId: 1, qty: 1, price: 10. (subtotal: $10.00; discount: $0.00) <br>Action input: Call checkout()                                                                                                                                                                                                                                                       | Checkout succeeds with status "success"; final charged total equals $10.00; order confirmation returned; cart is finalized/cleared                                                  |                                                                                                                                                                                                                                                      
+| TC15  | R15      | Verify checkout succeeds when cart is active                                                                       | Precondition: Cart has a productId: 1, qty: 1, price: 10. (subtotal: $10.00; discount: $0.00) <br>Action input: Call checkout()                                                                                                                                                                                                                                                       | Checkout succeeds with status "success"; final charged total equals $10.00; order confirmation returned; cart is finalized/cleared                                                  |                                                                                                                  
 ---
 
+## 4. Automated Test Suite
+
+The test cases specified above are automated using **Cypress E2E** to evaluate the cart implementation directly against the browser DOM.
+
+- **Test Spec File:** [`cypress/e2e/cart.cy.js`](./cypress/e2e/cart.cy.js)
+- **Custom Cypress Commands:** [`cypress/support/commands.js`](./cypress/support/commands.js) (`cy.addProduct`)
+- **SUT Web App:** [`cart.html`](./cart.html) & [`cart.js`](./cart.js)
+
+### Running the Tests Locally
+
+1. **Install dependencies:**
+   ```bash
+   # Option A: If cloning the repo with an existing package.json
+    npm install
+
+    # Option B: Complete explicit install commands (from scratch)
+    npm init -y
+    npm install --save-dev cypress
+   ```
+
+2. **Start the local server:**
+   ```bash
+   npx http-server -p 8080
+   ```
+
+3. **Run tests via Cypress:**
+   ```bash
+   # Option A: Run all 15 tests headlessly
+    npx cypress run --spec "cypress/e2e/cart.cy.js"
+
+    # Option B: Open interactive runner GUI
+    npx cypress open
+   ```
+---
+
+### Test Case to Implementation Traceability
+
+| Test id | Test name in cart cy js                                             | Ref rule | Status against baseline | Notes defect ref                                   |
+| :------ | :------------------------------------------------------------------ | :------- | :---------------------- | :------------------------------------------------- |
+| TC01    | TC01 - Add valid item to empty cart                                 | R01      | PASS                    | Baseline expected behavior confirmed               |
+| TC02    | TC02 - Add item to empty cart with invalid product Id               | R02      | FAIL                    | Exposes BUG-01 (Unvalidated product ID accepted)   |
+| TC03a   | TC03a - Add valid item with quantity as zero                        | R03      | PASS                    | Zero quantity blocked as invalid                   |
+| TC03b   | TC03b - Add valid item with negative quantity                       | R03      | PASS                    | Negative quantity blocked as invalid               |
+| TC04    | TC04 - Add product with exceeding quantity limit                    | R04      | PASS                    | Quantity > 10 blocked                              |
+| TC05a   | TC05a - Add product with negative price                             | R05      | PASS                    | Negative price blocked                             |
+| TC05b   | TC05b - Add product with zero price                                 | R05      | PASS                    | Zero price blocked                                 |
+| TC06    | TC06 - Remove valid and existing product from cart                  | R06      | PASS                    | Item removed and totals updated                    |
+| TC07    | TC07 - Remove invalid and non-existing product from empty cart      | R07      | PASS                    | Non-existent item removal safely rejected          |
+| TC08    | TC08 - Checkout empty cart                                          | R08      | FAIL                    | Exposes BUG-02 (Empty cart checkout allowed)       |
+| TC09    | TC09 - Apply valid uppercase discount code SAVE10                   | R09      | PASS                    | 10% discount applied and code active               |
+| TC10    | TC10 - Apply valid lowercase discount code save10                   | R10      | PASS                    | Case-insensitivity verified                        |
+| TC11    | TC11 - Apply SAVE20 replacing active previous discount code         | R11      | PASS                    | Code replacement verified without stacking         |
+| TC12    | TC12 - Attempt to apply SAVE20 when subtotal is below $50 threshold | R12      | FAIL                    | Exposes BUG-03 (Missing subtotal guard for SAVE20) |
+| TC13    | TC13 - Apply invalid discount code WHATEVER                         | R13      | PASS                    | Invalid code rejected                              |
+| TC14    | TC14 - Verify cart total cannot be negative and floors at $0.00     | R14      | FAIL                    | Exposes BUG-04 (Total not floored at $0.00)        |
+| TC15    | TC15 - Verify checkout succeeds when cart is active                 | R15      | PASS                    | Checkout completes and clears active cart          |
+
+---
+
+## 5. Defect Summary
+
+The 4 test failures above pinpoint the exact latent bugs in the SUT. Detailed bug reports with preconditions, execution steps, expected vs. actual outcomes, and root-cause analyses are documented in:   👉 **[View Defect Reports (BUG_REPORTS.md)](./BUG_REPORTS.md)**
