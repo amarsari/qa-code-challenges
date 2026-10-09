@@ -161,7 +161,7 @@ describe("Shopping Cart Validation Tests", () => {
         .and('contain.text', 'Item not found');
   });
 
-  it.skip("TC08 - Checkout empty cart", () => {
+  it.only("TC08 - Checkout empty cart", () => {
     cy.get('#checkoutBtn').click();
 
     cy.get('#itemList li').should('not.exist');
