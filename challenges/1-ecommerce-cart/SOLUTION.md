@@ -170,4 +170,4 @@ The test cases specified above are automated using **Cypress E2E** to evaluate t
 
 ## 5. Defect Summary
 
-The 4 test failures above pinpoint the exact latent bugs in the SUT. Detailed bug reports with preconditions, execution steps, expected vs. actual outcomes, and root-cause analyses are documented in:   👉 **[View Defect Reports (BUG_REPORTS.md)](./BUG_REPORTS.md)**
+The 4 test failures above pinpoint the exact latent bugs in the SUT. Detailed bug reports with preconditions, execution steps, expected vs. actual outcomes, and root-cause analyses are documented in:   👉 **[View Defect Reports (BUG_REPORTS.md)](./docs/BUG_REPORTS.md)**
