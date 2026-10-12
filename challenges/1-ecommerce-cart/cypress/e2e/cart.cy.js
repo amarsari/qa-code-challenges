@@ -161,7 +161,7 @@ describe("Shopping Cart Validation Tests", () => {
         .and('contain.text', 'Item not found');
   });
 
-  it.only("TC08 - Checkout empty cart", () => {
+  it.skip("TC08 - Checkout empty cart", () => {
     cy.get('#checkoutBtn').click();
 
     cy.get('#itemList li').should('not.exist');
@@ -235,7 +235,7 @@ describe("Shopping Cart Validation Tests", () => {
         .and('contain.text', 'Applied SAVE20');
   });
 
-  it.skip("TC12 - Attempt to apply SAVE20 when subtotal is below the $50 threshold", () => {
+  it.only("TC12 - Attempt to apply SAVE20 when subtotal is below the $50 threshold", () => {
     //Precondition:
     cy.addProduct(1, 1, '49.99');
 
