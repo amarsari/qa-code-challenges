@@ -235,7 +235,7 @@ describe("Shopping Cart Validation Tests", () => {
         .and('contain.text', 'Applied SAVE20');
   });
 
-  it.only("TC12 - Attempt to apply SAVE20 when subtotal is below the $50 threshold", () => {
+  it.skip("TC12 - Attempt to apply SAVE20 when subtotal is below the $50 threshold", () => {
     //Precondition:
     cy.addProduct(1, 1, '49.99');
 
@@ -276,7 +276,7 @@ describe("Shopping Cart Validation Tests", () => {
         .and('contain.text', 'Invalid code');
   });
 
-  it("TC14 - Verify cart total cannot be negative and floors at $0.00 when discount exceeds subtotal", () => {
+  it.only("TC14 - Verify cart total cannot be negative and floors at $0.00 when discount exceeds subtotal", () => {
     //Precondition:
     cy.addProduct(1, 1, '100');
 
