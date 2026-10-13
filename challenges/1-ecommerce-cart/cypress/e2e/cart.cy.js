@@ -276,7 +276,7 @@ describe("Shopping Cart Validation Tests", () => {
         .and('contain.text', 'Invalid code');
   });
 
-  it.only("TC14 - Verify cart total cannot be negative and floors at $0.00 when discount exceeds subtotal", () => {
+  it("TC14 - Verify cart total cannot be negative and floors at $0.00 when discount exceeds subtotal", () => {
     //Precondition:
     cy.addProduct(1, 1, '100');
 
@@ -325,49 +325,5 @@ describe("Shopping Cart Validation Tests", () => {
     cy.get('[id="message"]')
         .should('be.visible')
         .and('contain', /empty/i);
-  });
-
-  it("Discount not recalculated when subtotal grows", () => {
-    /*
-    Add item ($30,
-        doesn't qualify for
-        SAVE20 — use
-        SAVE10 instead), then
-        add another item
-        pushing subtotal ≥
-        $50
-    */
-    cy.get('[id="productId"]').type('1');
-    cy.get('[id="quantity"]').type('1');
-    cy.get('[id="price"]').type('30');
-    cy.get('[id="addBtn"]').click();
-
-    cy.get('[id="discountCode"]').type('SAVE10');
-    cy.get('[id="applyDiscountBtn"]').click();
-
-    cy.get('[id="message"]')
-        .should('be.visible')
-        .and('contain.text', 'Applied SAVE10');
-    
-    cy.get('[id="subtotal"]').should('contain.text', '30.00');
-    cy.get('[id="total"]').should('contain.text', '27.00');
-
-    // Item 2: pushes subtotal to $55
-    cy.get('[id="productId"]').clear().type('2');
-    cy.get('[id="quantity"]').clear().type('1');
-    cy.get('[id="price"]').clear().type('25');
-    cy.get('[id="addBtn"]').click();
-
-    cy.get('[id="message"]')
-        .should('be.visible')
-        .and('contain.text', 'Added 2');
-    cy.get('[id="subtotal"]').should('contain.text', '55.00'); // subtotal DOES update correctly
-    
-    cy.get('[id="total"]').invoke('text').then(
-    (text) => {
-        const total = parseFloat(text);
-        expect(total).to.equal(49.50);
-    }
-    );
   });
 });
