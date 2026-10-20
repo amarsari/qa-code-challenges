@@ -7,6 +7,7 @@ A curated collection of practical Quality Assurance technical challenges, coveri
 | # | Challenge | Focus Areas | SUT Tech | Challenge Spec | Solution & QA Docs |
 |---|---|---|---|---|---|
 | 01 | **E-Commerce Shopping Cart** | Boundary Value Analysis, Decision Tables, IEEE 829 Specs, State Modeling | Vanilla JS / Cypress | [View Prompt](./challenges/1-ecommerce-cart/README.md) | [View Solution](./challenges/1-ecommerce-cart/SOLUTION.md) |
+| 02 | **Login & Account Lockout** | State Transition Modeling, Decision Tables, Cooldown Timers, Recovery Flows | Vanilla JS / Cypress | [View Prompt](./challenges/2-login_n_account_lockout/README.md) | [View Solution](./challenges/2-login_n_account_lockout/SOLUTION.md) |
 
 ---
 
