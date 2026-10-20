@@ -6,7 +6,13 @@ Cypress.Commands.add('attemptLogin', (login, pwd) => {
 });
 
 Cypress.Commands.add('assertLoginState', (status, counter, message) => {
-    cy.get('[id="status"]').should('have.text', status);
-    cy.get('[id="counter"]').should('contain', counter);
-    if( message !== undefined) cy.get('[id="message"]').should('be.visible').and('contain', message);
+    cy.get('[id="status"]').should('have.text', `${status}`);
+    cy.get('[id="counter"]').should('contain', `${counter}`);
+    if( message !== undefined) cy.get('[id="message"]').should('be.visible').and('contain', `${message}`);
 });
+
+Cypress.Commands.add('lockAccount', () => {
+    cy.attemptLogin('correctlogin', 'wrongpwd');
+    cy.attemptLogin('correctlogin', 'wrongpwd');
+    cy.attemptLogin('correctlogin', 'wrongpwd');
+})

@@ -24,127 +24,140 @@ describe("Login & Account Lockout", () => {
     cy.visit("/login.html");
   });
 
-
-  
-
-  //old tests:
-  
-  it("TC0101 Rejects login with invalid password.", () => {
-    //Input data
-    cy.attemptLogin('wrongLogin', 'wrongPwd');
-    
-    //Assert state, counter and message
-    cy.assertLoginState('LoginScreen', '1', 'Invalid Credentials');
-  });
-
-  it("TC0102 Rejects login with invalid credentials, empty login", () =>{
-    cy.attemptLogin( undefined, 'wrongPwd');
-
-    //Assert state, counter and message
-    cy.assertLoginState('LoginScreen', '1', 'Invalid Credentials');
-  });
-
-  it("TC0103 Rejects login with invalid credentials, empty pwd", () => {
-    //Input data
-    cy.attemptLogin( 'wrongLogin', undefined);
-    
-    //Assert state, counter and message
-    cy.assertLoginState('LoginScreen', '1', 'Invalid Credentials');
-  });
-
-  it("TC02 Successful Login", () => {
+  it("TC01 - Successful Login With Correct Login and Correct Password", () => {
     cy.attemptLogin('correctlogin', 'correctpwd');
-
-    cy.assertLoginState('LoggedIn', '0', 'Login Success');
+    cy.assertLoginState('LoggedIn', 0, 'Login Success');
   });
 
-  it("TC0301 User types invalid credentials twice. System should not lock out user.", () =>{
-    for (let i = 0; i < 2; i++) {
-      cy.attemptLogin('correctLogin','wrongPwd');
-    }
-
-    cy.assertLoginState('LoginScreen', '2', 'Invalid Credentials');
+  it("TC02 - Failed Login With Correct Login and Incorrect Password", () => {
+    cy.attemptLogin('correctlogin', 'wrongpwd');
+    cy.assertLoginState('LoginScreen', 1, 'Invalid Credentials');
   });
 
-  it("TC0302 User gets locked out, no login is possible", () =>{
-    for (let i = 0; i < 3; i++) cy.attemptLogin('wrongLogin', 'wrongPwd');
-
-    cy.assertLoginState('Locked', '3', 'Invalid Credentials. User Locked Out');
+  it("TC03 - Consecutive Failed Login With Correct Login and Incorrect Password", () => {
+    cy.attemptLogin('correctlogin','wrongpwd');
+    cy.attemptLogin('correctlogin','wrongpwd');
+    cy.assertLoginState('LoginScreen', 2, 'Invalid Credentials');
   });
 
-  it("TC0401 User clicks on “Forgot Password”.", () =>{
-    cy.get('[id="forgotBtn"]').click();
+  it("TC04 - 3 Consecutive Failed Login With Correct Login and Incorrect Password", () => {
+    cy.clock(); //Freeze time at the start
 
-    cy.assertLoginState('LoginScreen', '0', 'Password Resent');
-  });
-
-  it("TC0402 Incorrect log in and password after counter resets", () => {
-    for (let i = 0; i < 2; i++) cy.attemptLogin('wrongLogin', 'wrongPwd');
-
-    cy.get('[id="forgotBtn"]').click();
-
-    cy.attemptLogin('wrongLogin', 'wrongPwd');
-
-    cy.assertLoginState('LoginScreen','1', 'Invalid Credentials');
-  });
-
-  it("TC05 Testing log out upon successful login", () => {
-    cy.attemptLogin('correctlogin', 'correctpwd');
-
-    cy.assertLoginState('LoggedIn', '0', 'Login Success');
-
-    cy.get('[id="logoutBtn"]').click();
-
-    cy.assertLoginState('LoginScreen', '0', 'Logged Out Successfully');
-  });
-
-  it("TC0601 Correct password gets rejected after user gets locked out", () =>{
-    for (let i = 0; i < 3; i++) cy.attemptLogin('wrongLogin', 'wrongPwd');
-
+    cy.attemptLogin('correctlogin','wrongpwd');
+    cy.attemptLogin('correctlogin','wrongpwd');
+    cy.attemptLogin('correctlogin','wrongpwd');
     cy.assertLoginState('Locked', '3', 'Invalid Credentials. User Locked Out');
 
-    cy.attemptLogin('correctlogin', 'correctpwd');
-
-    cy.assertLoginState('Locked', '3', 'Invalid Credentials. User Locked Out');
-
-    //Upon inputing valid credentials after user is locked out the system allows the login whereas it shouldn't.
-    //Evidence is in last assertion where it should return message "Invalid Credentials. User Locked Out" instead of 
-    // "Login Success"
-  });
-
-  it("TC0602 Incorrect password gets rejected after user gets locked out", () => {
-    for (let i = 0; i < 3; i++) cy.attemptLogin('wrongLogin', 'wrongPwd');
-    cy.assertLoginState('Locked', '3', 'Invalid Credentials. User Locked Out');
-
-    cy.attemptLogin('correctlogin', 'incorrectpwd');
-    cy.assertLoginState('Locked', '3', 'Invalid Credentials, Account locked out');
-  });
-
-  it("TC07 Return to Login Screen once timer expires", () => {
-    cy.clock();
-    cy.reload();
-
-    for (let i = 0; i < 3; i++) cy.attemptLogin('wrongLogin', 'wrongPwd');
-
-    cy.assertLoginState('Locked', '3', 'Invalid Credentials. User Locked Out');
-
+    //Prove cooldown is active: fast-forward time by 4m59s
+    cy.tick(299000);
+    cy.attemptLogin('correctlogin','correctpwd');
+    cy.get('#message').should('contain', 'Invalid Credentials. User Locked Out');
     
-    cy.tick(300000);
-
-    cy.assertLoginState('LoginScreen', '0', undefined);
-
-    //Counter remains at 3 instead of updating to 0
   });
 
-  it("TC08 Test forgot password flow when user account is locked out", () => {
-    for (let i = 0; i < 3; i++) cy.attemptLogin('wrongLogin', 'wrongPwd');
+  it("TC05 - Successful Login With Correct Login and Correct Password After 2 Incorrect Attempts", () => {
+    cy.attemptLogin('correctlogin', 'wrongpwd');
+    cy.attemptLogin('correctlogin', 'wrongpwd');
+    cy.attemptLogin('correctlogin', 'correctpwd');
+    cy.assertLoginState('LoggedIn', 0, 'Login Success');
+  });
 
+  it("TC06a - Submitting Correct Password With Locked Account", () => {
+    cy.attemptLogin('correctlogin', 'wrongpwd');
+    cy.attemptLogin('correctlogin', 'wrongpwd');
+    cy.attemptLogin('correctlogin', 'wrongpwd');
+    cy.attemptLogin('correctlogin', 'correctpwd');
     cy.assertLoginState('Locked', '3', 'Invalid Credentials. User Locked Out');
+  });
 
-    cy.get('[id="forgotBtn"]').click();
+  it("TC06b - Submitting Incorrect Password With Locked Account", () => {
+    cy.attemptLogin('correctlogin', 'wrongpwd');
+    cy.attemptLogin('correctlogin', 'wrongpwd');
+    cy.attemptLogin('correctlogin', 'wrongpwd');
+    cy.attemptLogin('correctlogin', 'wrongpwd');
+    cy.assertLoginState('Locked', '4', 'Invalid Credentials. User Locked Out');
+  });
 
-    cy.assertLoginState('LoginScreen','0', 'Password Resent');
+  it("TC07 - Submitting Forgot Password", () => {
+    cy.attemptLogin('correctlogin', 'wrongpwd');
+    cy.attemptLogin('correctlogin', 'wrongpwd');
+    cy.attemptLogin('correctlogin', 'wrongpwd');
+    cy.get('#forgotBtn').click();
+    //Account becomes unlocked; Counter resets to 0; Message: 'Password Resent', Login Screen is displayed; Active cooldown timer is cleared
+    cy.assertLoginState('LoginScreen', 0, 'Password Resent');
+  });
 
-    //Status is not updating upon account lock out is lifted. It should be LoginScreen instead of Locked
+  it("TC08 - Waiting 5 Minutes To Unlock Account", () => {
+    cy.clock(); //Freeze time at the start
+    cy.attemptLogin('correctlogin', 'wrongpwd');
+    cy.attemptLogin('correctlogin', 'wrongpwd');
+    cy.attemptLogin('correctlogin', 'wrongpwd');
+    
+    cy.tick(300000); //Fast-forward time by 5 minutes
+    cy.attemptLogin('correctlogin', 'correctpwd');
+    cy.assertLoginState('LoggedIn', 0, 'Login Success');
+  });
+
+  it("TC09 - Loggin Out While Logged In", () => {
+    cy.attemptLogin('correctlogin', 'correctpwd');
+    cy.get('#logoutBtn').click();
+    cy.assertLoginState('LoginScreen', 0, 'Logged Out Successfully');
+  });
+
+  it("TC10 - Timer Boundary: Attempting Login Just Before 5 Minutes (e.g. 4m 59s)", () => {
+    cy.clock(); //Freeze time at the start
+    cy.attemptLogin('correctlogin', 'wrongpwd');
+    cy.attemptLogin('correctlogin', 'wrongpwd');
+    cy.attemptLogin('correctlogin', 'wrongpwd');
+    
+    cy.tick(299000); //Fast-forward time by 4 minutes and 59 seconds
+    cy.attemptLogin('correctlogin', 'correctpwd');
+    cy.assertLoginState('Locked', '3', 'Invalid Credentials. User Locked Out');
+  });
+
+  it("TC11 - End-to-End Recovery Flow: Successful Login After 5-Minute Timer Expiry", () => {
+    // Precondition: Account was locked; full 5 minutes have elapsed (account auto-unlocked, counter reset to 0).
+    // Action Input: User submits valid username and valid password.
+
+    cy.clock(); //Freeze time at the start
+    cy.lockAccount(); //Lock the account with 3 failed attempts
+
+    cy.tick(300000); //Fast-forward time by 5 minutes
+    cy.attemptLogin('correctlogin', 'correctpwd');
+    cy.assertLoginState('LoggedIn', 0, 'Login Success');
+  });
+
+  it("TC12 - End-to-End Recovery Flow: Successful Login After Forgot Password Flow", () => {
+    // Precondition: Account was locked; user clicked ""Forgot Password"" (account unlocked, counter reset to 0).
+    // Action Input: User enters valid credentials.
+
+    cy.lockAccount();
+    cy.get('#forgotBtn').click();
+    cy.attemptLogin('correctlogin', 'correctpwd');
+    cy.assertLoginState('LoggedIn', 0, 'Login Success');
+  });
+
+  it("TC13 - Input Validation / Error State: Empty Password Field", () => {
+    // Precondition: Account unlocked, counter = 0.
+    // Action Input: Valid username, empty password ("""")."
+
+    cy.attemptLogin('correctlogin', '');
+    cy.assertLoginState('LoginScreen', 1, 'Invalid Credentials');
+  });
+
+  it("TC14 - Input Validation / Error State: Empty Username / Non-Existent User", () => {
+    // Precondition: On login screen. Account unlocked
+    // Action Input: Empty username ("""") or unknown user, any password."
+
+    cy.attemptLogin('', 'correctpwd');
+    cy.assertLoginState('LoginScreen', 1, 'Invalid Credentials');
+  });
+
+  it("TC15 - Edge Case: Password Case Sensitivity", () => {
+    // Precondition: Account unlocked, counter = 0 (known valid password e.g., SecretPass123).
+    // Action Input: Valid username, wrong case password (e.g., secretpass123)."
+
+    cy.attemptLogin('correctlogin', 'CorrectPWD');
+    cy.assertLoginState('LoginScreen', 1, 'Invalid Credentials');
   });
 });
