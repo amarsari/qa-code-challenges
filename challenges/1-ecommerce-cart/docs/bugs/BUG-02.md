@@ -3,19 +3,19 @@
 - **Defect ID:** `BUG-02`
 - **Traceability Ref:** Test Case `TC08` | Rule `R08`
 - **Severity:** Major (Business logic / checkout gating bypass)
-- **Priority:** P1 (Immediate / High business impact)
-- **Component:** Checkout Processing (`checkout` handler in `cart.js`)
+- **Priority:** P1 (High business impact — creates phantom $0.00 zero-item orders)
+- **Component:** Checkout Processing / Order Guard
 - **Environment:** Chrome / Cypress E2E Runner / Localhost (`cart.html`)
 
 #### Description
 When attempting to check out with an empty cart, the system completes the transaction and displays a success confirmation for `$0.00` instead of rejecting the action and alerting the user that the cart contains no items.
 
 #### Preconditions
+- Application loaded at `http://localhost:8080/cart.html`.
 - The shopping cart is empty (`items: []`, `subtotal: $0.00`).
-- Application loaded at `http://localhost:8000` (or local test server port).
 
 #### Steps to Reproduce
-1. Navigate to the shopping cart interface.
+1. Navigate to `http://localhost:8080/cart.html`.
 2. Click the **Checkout** button (`#checkoutBtn`).
 
 #### Expected Result
@@ -37,3 +37,4 @@ Timed out retrying after 4000ms
   +'Empty cart cannot be checked out'
   
   at Context.eval (cypress/e2e/cart.cy.js:170:9)
+```
